@@ -1,0 +1,55 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+
+entities = ['Apple', 'Microsoft', 'Samsung', 'Sony', 'Google', 'LG', 'HTC', 'Facebook', 'Twitter', 'Yahoo']
+positive = [1254, 1212, 1180, 1023, 1145, 942, 873, 1012, 1124, 987]
+negative = [234, 267, 311, 345, 298, 356, 412, 321, 298, 374]
+neutral = [156, 165, 144, 132, 145, 123, 134, 167, 145, 123]
+
+plt.bar(entities, positive, color='g')
+plt.bar(entities, negative, color='r', bottom=positive)
+plt.bar(entities, neutral, color='b', bottom=[positive[i] + negative[i] for i in range(len(entities))])
+plt.title('Sentiment Analysis of Social Media Data')
+plt.xlabel('Entities')
+plt.ylabel('Number of Tweets')
+plt.show()
+entities = ['Apple', 'Microsoft', 'Samsung', 'Sony', 'Google', 'LG', 'HTC', 'Facebook', 'Twitter', 'Yahoo']
+positive = [1254, 1212, 1180, 1023, 1145, 942, 873, 1012, 1124, 987]
+negative = [234, 267, 311, 345, 298, 356, 412, 3]
+
+data = pd.read_csv('twitter_entity_sentiment_analysis.csv')
+# Drop rows with missing values
+data = data.dropna()
+
+# Convert sentiment scores to numeric values
+data['sentiment_score'] = pd.to_numeric(data['sentiment_score'], errors='coerce')
+
+plt.hist(data['sentiment_score'], bins=20)
+plt.xlabel('Sentiment Score')
+plt.ylabel('Frequency')
+plt.title('Distribution of Sentiment Scores')
+plt.show()
+# Calculate the average sentiment score for each entity
+entity_avg_sentiment = data.groupby('entity')['sentiment_score'].mean().reset_index()
+
+# Sort the entities by their average sentiment score
+entity_avg_sentiment = entity_avg_sentiment.sort_values('sentiment_score', ascending=False)
+
+# Plot the top 10 entities with the highest average sentiment scores
+plt.barh(entity_avg_sentiment['entity'][:10], entity_avg_sentiment['sentiment_score'][:10])
+plt.xlabel('Average Sentiment Score')
+plt.title('Top 10 Entities with Highest Average Sentiment Scores')
+plt.show()
+# Convert the date column to datetime format
+data['date'] = pd.to_datetime(data['date'])
+
+# Calculate the daily average sentiment score
+daily_avg_sentiment = data.groupby(data['date'].dt.date)['sentiment_score'].mean().reset_index()
+daily_avg_sentiment.columns = ['date', 'sentiment_score']
+
+# Plot the daily average sentiment score
+plt.plot(daily_avg_sentiment['date'], daily_avg_sentiment['sentiment_score'])
+plt.xlabel('Date')
+plt.ylabel('Average Sentiment Score')
+plt.title('Daily Average Sentiment Score')
+plt.show()
